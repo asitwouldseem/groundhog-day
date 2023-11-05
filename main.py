@@ -1,11 +1,21 @@
 import utime
 from machine import Pin
+from picodfplayer import DFPlayer
 
 clock_led = Pin(13, Pin.OUT)
 alarm_trigger = Pin(4, Pin.IN, Pin.PULL_UP)
-rick_on = Pin(21, Pin.IN, Pin.PULL_UP)
+mode_on = Pin(21, Pin.IN, Pin.PULL_UP)
 device_on = Pin(20, Pin.IN, Pin.PULL_UP)
 
+# DFPlayer
+UART_INSTANCE=0
+TX_PIN = 16
+RX_PIN=17
+BUSY_PIN=22
+
+player=DFPlayer(UART_INSTANCE, TX_PIN, RX_PIN, BUSY_PIN)
+
+# Stepper Motor
 STEPS_PER_MINUTE = 25
 
 IN1 = Pin(9, Pin.OUT)
@@ -17,12 +27,17 @@ pins = [IN1, IN2, IN3, IN4]
 
 sequence = [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]
 
-# Ordinary Operation
 def music_box():
-  clock_led.value(1)    
-
-def rick_roll():
   clock_led.value(1)
+  print("Starting playback.")
+  player.setPlaybackMode(1)
+
+# Ordinary Operation
+def alarm():
+  print("Alarm triggered.")
+
+  # Play Sonny & Cher 'I Got You Babe' 
+  player.playTrack(2,1)
 
 while True:
   # Fetch current time
@@ -37,14 +52,11 @@ while True:
           pins[i].value(step[i])
           utime.sleep(0.001)
     
-  # If device is set to 'on', arm alarm and start DFPlayer
-  if device_on.value() != 1:
+  # Consider device on if set to 'On' or 'Manual'
+  if device_on.value() != 1 or mode_on.value() != 1:
     music_box()
-    
-  # If device is set to 'auto', queue Rick Astley's infamous single.
-  elif rick_on.value() != 1:
-    rick_roll()
 
   # Else, consider the clock off.
   else:
+    player.pause()
     clock_led.value(0)
