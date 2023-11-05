@@ -31,13 +31,20 @@ def music_box():
   clock_led.value(1)
   print("Starting playback.")
   player.setPlaybackMode(1)
+  
+  if alarm_trigger.value() != 1:
+    alarm()
 
 # Ordinary Operation
 def alarm():
   print("Alarm triggered.")
 
-  # Play Sonny & Cher 'I Got You Babe' 
-  player.playTrack(2,1)
+  if mode_on.value() != 1:
+    # Play Rick Astley's 'Never Going to Give You Up'
+    player.playTrack(2,1)
+  else:
+    # Play Sonny & Cher 'I Got You Babe' 
+    player.playTrack(2,2)
 
 while True:
   # Fetch current time
@@ -58,5 +65,6 @@ while True:
 
   # Else, consider the clock off.
   else:
+    print("Turning off.")
     player.pause()
     clock_led.value(0)
