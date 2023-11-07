@@ -1,4 +1,4 @@
-import utime
+import utime, random
 from machine import Pin
 from picodfplayer import DFPlayer
 
@@ -15,6 +15,9 @@ BUSY_PIN=22
 
 player=DFPlayer(UART_INSTANCE, TX_PIN, RX_PIN, BUSY_PIN)
 
+# Volume Control
+POTENTIOMETER_PIN = 26
+
 # Stepper Motor
 STEPS_PER_MINUTE = 25
 
@@ -27,24 +30,37 @@ pins = [IN1, IN2, IN3, IN4]
 
 sequence = [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]
 
+# Read the pot for volume control
+def read_potentiometer_value(pin):
+    return pin.read_u16()
+
+# Ordinary Operation
 def music_box():
-  clock_led.value(1)
-  print("Starting playback.")
-  player.setPlaybackMode(1)
-  
+  if mode_on.value() != 1:
+    player.setPlaybackMode(1)
+    clock_led.value(1)
+    
   if alarm_trigger.value() != 1:
     alarm()
 
-# Ordinary Operation
+# Trigger a specific song when alarm is triggered.
 def alarm():
-  print("Alarm triggered.")
+  clock_led.value(1)    
 
-  if mode_on.value() != 1:
-    # Play Rick Astley's 'Never Going to Give You Up'
+  if random.randint(1, 10) == 10 and device_on.value() != 1:
+
+    # Play Rick Astley's infamous single, 'Never Going to Give You Up'
     player.playTrack(2,1)
-  else:
+    print("I'm never going to give [up this joke].")
+
+  elif mode_on.value() != 1 or device_on.value() != 1:
+
     # Play Sonny & Cher 'I Got You Babe' 
     player.playTrack(2,2)
+    print("Urgh, Groundhog Day. Another Day.")
+
+  else:
+    print("Exited. Alarm triggered when clock off.")
 
 while True:
   # Fetch current time
@@ -58,13 +74,23 @@ while True:
         for i in range(len(pins)):
           pins[i].value(step[i])
           utime.sleep(0.001)
-    
+
+  # Read the analog value from the potentiometer
+  potentiometer_value = read_potentiometer_value(machine.ADC(POTENTIOMETER_PIN))
+
+  # Map the potentiometer value to the volume range of DFPlayer Mini (0-30)
+  volume = int(30 * potentiometer_value / 65535)
+
+  # Set the volume of DFPlayer Mini
+  player.setVolume(volume)
+
   # Consider device on if set to 'On' or 'Manual'
   if device_on.value() != 1 or mode_on.value() != 1:
     music_box()
 
   # Else, consider the clock off.
   else:
-    print("Turning off.")
     player.pause()
     clock_led.value(0)
+
+  utime.sleep_ms(100)
