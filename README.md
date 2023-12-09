@@ -2,7 +2,7 @@
 For legal reasons, not inspired by the film of the same name. A joke gift for a colleague at work.
 
 ## Bill of Materials
-- 1x Audiosonic 3000 AM/FM Clock Radio
+- 1x Sanyo RM 5010
 - 1x Raspberry Pi Pico ($6.30)
 - 1x 28BYJ-48 Stepper Motor + ULN2003 Driver (A$10)
 - 1x DFPlayer Mini ($10)
