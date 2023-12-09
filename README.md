@@ -12,3 +12,12 @@ For legal reasons, not inspired by the film of the same name. A joke gift for a 
 
 ## AI
 Full disclosure. As this was for a silly joke, I used Generative AI to help me write the code for the stepper motor. I was planning to reuse the existing Copal motor, but I wasn't comfortable with my work co-existing with the 220V mains. Everything else is my own doing.
+
+# Power Draw
+Rough napkin maths...
+- Raspberry Pi Pico (5V, 50mA)
+- 28BYJ-48 Stepper Motor (5V, 240mA)
+- DFPlayer Mini (5V, 20mA)
+- LED (2.7V, 20mA)
+
+330mA... Ahhh... I'll recommend 1A.
