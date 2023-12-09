@@ -26,7 +26,7 @@ IN3 = Pin(8, Pin.OUT)
 IN4 = Pin(6, Pin.OUT)
 
 # Adjust to match the Copal mechanism
-STEPS_PER_MINUTE = 25
+STEPS_PER_MINUTE = 60
 
 pins = [IN1, IN2, IN3, IN4]
 sequence = [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]
