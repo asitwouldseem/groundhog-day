@@ -32,7 +32,7 @@ pins = [IN1, IN2, IN3, IN4]
 sequence = [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]
 
 def rickroll():
-  player.playTrack(2,1)
+  player.playTrack(2,2)
   
   while player.queryBusy() == True:
     time.sleep(0.5)
@@ -43,7 +43,7 @@ def rickroll():
   # Once song has finished, it should resume to main loop.
 
 def groundhog():
-  player.playTrack(1,1)
+  player.playTrack(2,1)
 
   while player.queryBusy() == True:
     CLOCK_LED.value(1)
@@ -51,17 +51,19 @@ def groundhog():
   # Once song has finished, it should resume to main loop.
 
 def alarm():
+  # Only trigger alarm if clock is in an 'on' state.
+  if MODE_1.value() != 1 or  MODE_2.value() != 1:
 
-  # Pick a number between 1 and 10 to decide what alarm.
-  if random.randint(1, 10) == 10:
-    print("I'm never going to give [up this joke].")
-    rickroll()
-  else:
-    print("Urgh, Groundhog Day. Another Day.")
-    groundhog()
-
-  # Turn the LED off and return to main loop.
-  CLOCK_LED.value(0)
+    # Pick a number between 1 and 10 to decide what alarm.
+    if random.randint(1, 10) == 10:
+      print("I'm never going to give [up this joke].")
+      rickroll()
+    else:
+      print("Urgh, Groundhog Day. Another Day.")
+      groundhog()
+  
+    # Turn the LED off and return to main loop.
+    CLOCK_LED.value(0)
 
 def clock():
   current_time = utime.localtime()
@@ -75,7 +77,7 @@ def clock():
           pins[i].value(step[i])
           utime.sleep(0.001)
     
-    print("Moved the clocks forward, Master.")
+    print("Moved the clocks forward.")
 
 def init():
 
