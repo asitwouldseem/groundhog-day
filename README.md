@@ -7,7 +7,7 @@ For legal reasons, not inspired by the film of the same name. A joke gift for a 
 - 1x 28BYJ-48 Stepper Motor + ULN2003 Driver (A$10)
 - 1x DFPlayer Mini ($10)
 - 1x warm white LED (A$0.07)
-- 3x 330ohm resistor (A$0.30)
+- 1x 330ohm resistor (A$0.10)
 - Scrap aluminium for brackets + fasteners
 
 ## AI
