@@ -17,7 +17,6 @@ player = DFPlayer(UART_INSTANCE, TX_PIN, RX_PIN, BUSY_PIN)
 CLOCK_LED = Pin(13, Pin.OUT)
 ALARM = Pin(12, Pin.IN, Pin.PULL_UP)
 MODE_1= Pin(21, Pin.IN, Pin.PULL_UP)
-MODE_2= Pin(20, Pin.IN, Pin.PULL_UP)
 
 # Stepper Motor
 IN1 = Pin(9, Pin.OUT)
@@ -52,7 +51,7 @@ def groundhog():
 
 def alarm():
   # Only trigger alarm if clock is in an 'on' state.
-  if MODE_1.value() != 1 or  MODE_2.value() != 1:
+  if MODE_1.value() != 1:
 
     # Pick a number between 1 and 10 to decide what alarm.
     if random.randint(1, 10) == 10:
