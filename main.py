@@ -9,7 +9,7 @@ RX_PIN = 17
 BUSY_PIN = 22
 
 # Between 0-30
-DEFAULT_VOLUME = 10
+DEFAULT_VOLUME = 5
 
 player = DFPlayer(UART_INSTANCE, TX_PIN, RX_PIN, BUSY_PIN)
 
@@ -112,12 +112,11 @@ def mainLoop():
   global current_song
     
   while True:
-    clock()
-
     # Determine if the clock is on. If it is, we'll use it as a normal MP3 player.
     # Turning it on/off does have the effect of skipping a track. But that's a 'feature.'
     while MODE_1.value() != 1:
       playing = current_song + 1
+      clock()
 
       if player.queryBusy() == False:
         player.playTrack(1, playing)
@@ -129,7 +128,9 @@ def mainLoop():
         alarm()
 
     else:
+      # Yeah, I know this isn't great. But it works.
       player.pause()
+      clock()
     
     # Save some CPU cycles.
     time.sleep(1)
