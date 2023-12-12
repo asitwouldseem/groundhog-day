@@ -25,10 +25,16 @@ IN3 = Pin(8, Pin.OUT)
 IN4 = Pin(6, Pin.OUT)
 
 # Adjust to match the Copal mechanism
-STEPS_PER_MINUTE = 60
+STEPS_PER_MINUTE = 100
 
 pins = [IN1, IN2, IN3, IN4]
 sequence = [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]
+
+# Used to advance through the folder.
+current_song = 0
+
+# Once a first alarm has triggered, we'll start randomising.
+initial_rand = 1
 
 def rickroll():
   player.playTrack(2,2)
@@ -39,7 +45,7 @@ def rickroll():
     time.sleep(0.5)
     CLOCK_LED.value(0)
 
-  # Once song has finished, it should resume to main loop.
+  # Once song has finished, it should resume to alarm() function.
 
 def groundhog():
   player.playTrack(2,1)
@@ -47,14 +53,16 @@ def groundhog():
   while player.queryBusy() == True:
     CLOCK_LED.value(1)
     
-  # Once song has finished, it should resume to main loop.
+  # Once song has finished, it should resume to alarm() function.
 
 def alarm():
+  global initial_rand
+
   # Only trigger alarm if clock is in an 'on' state.
   if MODE_1.value() != 1:
 
     # Pick a number between 1 and 10 to decide what alarm.
-    if random.randint(1, 10) == 10:
+    if initial_rand == 10:
       print("I'm never going to give [up this joke].")
       rickroll()
     else:
@@ -63,6 +71,10 @@ def alarm():
   
     # Turn the LED off and return to main loop.
     CLOCK_LED.value(0)
+    
+    # Once that initial alarm has triggered, we arm Rick Astley.
+    initial_rand = random.randint(1, 10)
+    print(initial_rand)
 
 def clock():
   current_time = utime.localtime()
@@ -85,7 +97,7 @@ def init():
   
   # Set a default volume. 30 is VERY LOUD with this radio's tiny speaker.
   player.setVolume(DEFAULT_VOLUME)
-  
+
   mainLoop()
 
 #
@@ -97,17 +109,27 @@ def init():
 #
 
 def mainLoop():
+  global current_song
+    
   while True:
     clock()
 
-    if MODE_1.value() != 1:
-      # Shuffle songs on flash drive
-      player.setPlaybackMode(3)
+    # Determine if the clock is on. If it is, we'll use it as a normal MP3 player.
+    # Turning it on/off does have the effect of skipping a track. But that's a 'feature.'
+    while MODE_1.value() != 1:
+      playing = current_song + 1
+
+      if player.queryBusy() == False:
+        player.playTrack(1, playing)
+
+        current_song = playing
+        
+      if ALARM.value() != 1:
+        player.pause()
+        alarm()
+
     else:
       player.pause()
-      
-    if ALARM.value() != 1:
-      alarm()
     
     # Save some CPU cycles.
     time.sleep(1)
