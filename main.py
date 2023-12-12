@@ -9,7 +9,7 @@ RX_PIN = 17
 BUSY_PIN = 22
 
 # Between 0-30
-DEFAULT_VOLUME = 5
+DEFAULT_VOLUME = 10
 
 player = DFPlayer(UART_INSTANCE, TX_PIN, RX_PIN, BUSY_PIN)
 
@@ -25,7 +25,7 @@ IN3 = Pin(8, Pin.OUT)
 IN4 = Pin(6, Pin.OUT)
 
 # Adjust to match the Copal mechanism
-STEPS_PER_MINUTE = 100
+STEPS_PER_MINUTE = 90
 
 pins = [IN1, IN2, IN3, IN4]
 sequence = [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]
@@ -57,24 +57,21 @@ def groundhog():
 
 def alarm():
   global initial_rand
-
-  # Only trigger alarm if clock is in an 'on' state.
-  if MODE_1.value() != 1:
-
-    # Pick a number between 1 and 10 to decide what alarm.
-    if initial_rand == 10:
-      print("I'm never going to give [up this joke].")
-      rickroll()
-    else:
-      print("Urgh, Groundhog Day. Another Day.")
-      groundhog()
   
-    # Turn the LED off and return to main loop.
-    CLOCK_LED.value(0)
+  # Pick a number between 1 and 10 to decide what alarm.
+  if initial_rand == 10:
+    print("I'm never going to give [up this joke].")
+    rickroll()
+  else:
+    print("Urgh, Groundhog Day. Another Day.")
+    groundhog()
+  
+  # Turn the LED off and return to main loop.
+  CLOCK_LED.value(0)
     
-    # Once that initial alarm has triggered, we arm Rick Astley.
-    initial_rand = random.randint(1, 10)
-    print(initial_rand)
+  # Once that initial alarm has triggered, we arm Rick Astley.
+  initial_rand = random.randint(1, 10)
+  print(initial_rand)
 
 def clock():
   current_time = utime.localtime()
@@ -112,6 +109,10 @@ def mainLoop():
   global current_song
     
   while True:
+    if ALARM.value() != 1:
+      player.pause()
+      alarm()      
+      
     # Determine if the clock is on. If it is, we'll use it as a normal MP3 player.
     # Turning it on/off does have the effect of skipping a track. But that's a 'feature.'
     while MODE_1.value() != 1:
@@ -122,10 +123,6 @@ def mainLoop():
         player.playTrack(1, playing)
 
         current_song = playing
-        
-      if ALARM.value() != 1:
-        player.pause()
-        alarm()
 
     else:
       # Yeah, I know this isn't great. But it works.
